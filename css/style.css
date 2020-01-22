@@ -1,0 +1,16 @@
+
+
+.cell{
+    width: 40px;
+    height: 40px;
+    background-color:gray;
+    text-align: center;
+}
+
+.notShown{
+
+    display: none;
+
+
+}
+
