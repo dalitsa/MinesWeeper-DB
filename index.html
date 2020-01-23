@@ -5,15 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>MiNeSWeEpEr</title>
+    <title>Mine Sw💣💣per</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body onload="initGame()">
-    <h1>MiNeSWeEpEr</h1>
-    <table border="10" cellpadding="10">
+    <h1>Mine Sweeper</h1>
+    <div class="timer">00:00</div>
+    <button class="smily" onclick="restart()"> <img src="img/smile.png" /></button>
+    <table border="3" cellpadding="3">
         <tbody class="board"></tbody>
     </table>
+    <button class="Beginner" onclick="setLevel(0)">Beginner</button>
+    <button class="Intermediate"onclick="setLevel(1)">Intermediate</button>
+    <button class="Expert"onclick="setLevel(2)">Expert</button>
+    <div class="Lives"> 
+    <button onclick="safeClick(this)"></button>
+    <button onclick="safeClick(this)"></button>
+    <button onclick="safeClick(this)"></button>
+    </div>
 
 
 

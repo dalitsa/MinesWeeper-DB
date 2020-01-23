@@ -14,3 +14,26 @@
 
 }
 
+title{
+font-size: 30px;
+
+}
+.smily{
+    margin-left: 60px;
+}
+
+.timer {
+    border: black;
+    background-color: black;
+    color: cornsilk;
+    width: 85px;
+    text-align: center;
+    margin-left: 60px;
+}
+
+.Life button{
+widows: 60px;
+
+}
+
+
