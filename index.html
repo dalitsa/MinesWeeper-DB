@@ -9,10 +9,10 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body onload="initGame()">
+<body oncontextmenu="return false" onload="initGame()">
     <h1>Mine Sweeper</h1>
     <div class="timer">00:00</div>
-    <button class="smily" onclick="restart()"> <img src="img/smile.png" /></button>
+    <button class="smiley" onclick="restart()"> <img src="img/smile.png" /></button>
     <table border="3" cellpadding="3">
         <tbody class="board"></tbody>
     </table>

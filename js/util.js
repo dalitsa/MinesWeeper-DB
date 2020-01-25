@@ -1,6 +1,6 @@
 'use strict';
 
-var gInterval;
+
 
 function createMat(ROWS, COLS) {
     var mat = []
@@ -47,7 +47,6 @@ function timer(startTime) {
     gGame.secsPassed=seconds;
 
 }
-
 
 function resetTimer() {
     var elTimer = document.querySelector('.timer')

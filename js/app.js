@@ -1,37 +1,25 @@
 'use strict';
 
-//********TODO */
-//1- make sure random mine positions are different!
-
-
 // GLOBALS:
-
+var gInterval = null
 var gBoard = []          // each cell in the board is an object 
-
-
-
-// var gLevel = { SIZE: 4, MINES: 2 };
-var gShownCounter = 0
+var gShownCounter = 0;
 var gChosenLevelIdx = 0;
-var gLevels = [{ SIZE: 4, MINES: 2 }, { SIZE: 8, MINES: 12 }, { SIZE: 12, MINES: 30 }]
-var gMinesPoss = []//[{ iKey: 0, jKey: 1 }, { iKey: 2, jKey: 0 }];
-var MINE = 'MINE'//`U+1F4A3`;
+var gLevels = [{ SIZE: 4, MINES: 2 }, { SIZE: 8, MINES: 12 }, { SIZE: 12, MINES: 30 }];
+var gMinesPoss = [];
+var MINE = 'MINE';
 var EMPTY = 'EMPTY';
 var MINE_IMG = '<img  src="img/Mine.png" />';
 var COVERED_IMG = '<img  src="img/covered.png" />';
 var FLAG_IMG = '<img src="img/Flag.png" />';
-var WIN = '<img src="img/unicorn.png" />'
-var DEAD = '<img src="img/scream.png" />'
-var SMILY = '<img src="img/smile.png" />'
-var LIFE = '<img src="img/colorLife.png" />'
-var USEDLIFE = '<img src="img/usedLife.png" />'
-var BELL = '<img src="img/bell.png" />'
-var FIRST = '<img src="first/bell.png" />' 
-localStorage.setItem('BesTime', +Infinity)
-
-
-
-
+var WIN = '<img src="img/unicorn.png" />';
+var DEAD = '<img src="img/scream.png" />';
+var SMILEY = '<img src="img/smile.png" />';
+var LIFE = '<img src="img/colorLife.png" />';
+var USEDLIFE = '<img src="img/usedLife.png" />';
+var BELL = '<img src="img/bell.png" />';
+var FIRST = '<img src="first/bell.png" />';
+localStorage.setItem('Best Time', +Infinity);
 
 var gGame = {
     isOn: false,            //   isOn – boolean, when true we let the user play   
@@ -44,21 +32,22 @@ var gGame = {
 
 // This is called when page loads 
 function initGame() {
+    resetTimer()
     gShownCounter = 0;
     gGame.isOn = true
     gGame.shownCount = 0
     gGame.markedCount = 0
     gGame.secsPassed = 0
+    gMinesPoss=[]
     console.log('GOOD LUCK')
     gBoard = buildBoard()
     renderBoard(gBoard)
-    console.log(gMinesPoss)
+    console.log('mines array: ',gMinesPoss)
     var Lives = document.querySelectorAll('.Lives button')
     for (var i = 0; i < Lives.length; i++) {
         Lives[i].innerHTML = LIFE
+        Lives[i].hidden=false
     }
-
-
 }
 
 // Builds the board   Set mines at random locations Call setMinesNegsCount() Return the created board 
@@ -73,21 +62,24 @@ function buildBoard() {
         }
     }
     setMinesNegsCount(board)
-    console.dir(board);
     return board;
 }
 
 
 function randomMinePos() {
     var mineCount = gLevels[gChosenLevelIdx].MINES;
+    var prevPos = []
     for (var i = 0; i < mineCount; i++) {
         var mineI = getRandomInt(0, gLevels[gChosenLevelIdx].SIZE - 1)
         var mineJ = getRandomInt(0, gLevels[gChosenLevelIdx].SIZE - 1)
-        
+        var res = mineI * 10 + mineJ
+        if (prevPos.includes(res)) {
+            i--
+            continue
+        }
+        prevPos.push(res)
         var newMinePos = { iKey: mineI, jKey: mineJ }
         gMinesPoss.push(newMinePos)
-        
-        // renderCell(newMinePos, MINE)
     }
     return;
 }
@@ -106,7 +98,7 @@ function isPosOfMine(posI, posJ) {
     var numOfMine = gLevels[gChosenLevelIdx].MINES;
     for (var i = 0; i < numOfMine; i++) {
         if (gMinesPoss[i].iKey === posI && gMinesPoss[i].jKey === posJ) return true;
-    }
+        }
     return false
 }
 
@@ -172,9 +164,6 @@ function renderBoard(board) {
     var elBoard = document.querySelector('.board');
     elBoard.innerHTML = strHTML;
 
-
-
-
 }
 
 function setClassName(cellVal, i, j, ) {
@@ -198,7 +187,6 @@ function renderCell(tdId, value) {
     var cellSelector = `#${tdId}`
     gShownCounter++
     checkGameOver()
-    console.log(gShownCounter)
     var elCell = document.querySelector(cellSelector);
     elCell.innerHTML = value;
 }
@@ -207,7 +195,7 @@ function renderCell(tdId, value) {
 //Called when a cell (td) is clicked
 function cellClicked(elCell, i, j, ev) {
     if (!gGame.isOn) return
-    if (gGame.secsPassed===0) startTimer()
+    if (gGame.secsPassed === 0) startTimer()
     if (ev.button === 0) exposingboard(elCell, i, j)
     else if (ev.button === 2) setFlagImg(elCell, i, j)
 
@@ -315,20 +303,12 @@ function gameOver(value) {
                 var elMine = document.querySelector('#' + MineId)
                 elMine.innerHTML = `${MINE_IMG}`
             }
-            var smily = document.querySelector('.smily')
-            smily.innerHTML = DEAD
+            var smiley = document.querySelector('.smiley')
+            smiley.innerHTML = DEAD
             gGame.isOn = false
     }
 }
 
-
-// Called on right click to mark a cell (suspected to be a mine) Search the web 
-// (and implement) how to hide the context menu on right click 
-
-function cellMarked(elCell) {// implemented above under the name: setFlagImg
-
-
-}
 
 //Game ends when all mines are marked and all the other cells are shown
 function checkGameOver() {
@@ -337,39 +317,21 @@ function checkGameOver() {
     var goalShownCount = (chosenSize ** 2) - mineNum
     var flagNum = mineNum
     if (goalShownCount == gShownCounter && flagNum == gGame.markedCount) {
+        stopTimer()
         console.log('Victory!!!')
-        var smily = document.querySelector('.smily')
-        smily.innerHTML = WIN
+        var smiley = document.querySelector('.smiley')
+        smiley.innerHTML = WIN
         gGame.isOn = false
-        var BestTimeTillNow= localStorage.getItem('BesTime')
-        console.log(BestTimeTillNow);
-        if(gGame.secsPassed<BestTimeTillNow){
-            console.log(`It's World Record!!`)
-            localStorage.setItem('BesTime',gGame.secsPassed)
-            var elbody= document.querySelector('body')
+        var BestTimeTillNow = localStorage.getItem('Best Time')
+        if (gGame.secsPassed < BestTimeTillNow) {
+            console.log(`It's a World Record!!`)
+            localStorage.setItem('Best Time', gGame.secsPassed)
 
         }
     }
 
-
-    // localStorage.setItem('Best Time', gGame.secsPassed);
-    // (localStorage.getItem('Name')== null){
-    //     var userName = prompt("what's your name?")
-
-    //     var Name = localStorage.getItem('Name');
-
 }
 
-// When user clicks a cell with no mines around, we need to open not only that cell, but also its neighbors.  
-
-// NOTE: start with a basic implementation that only opens the non-mine 1st degree neighbors 
-
-// BONUS: if you have the time later, try to work more like the real algorithm (see description at the Bonuses section below) 
-
-function expandShown(board, elCell, i, j) {
-
-
-}
 
 function setLevel(num) {
     stopTimer()
@@ -393,8 +355,8 @@ function setLevel(num) {
 }
 
 function restart() {
-    var smily = document.querySelector('.smily')
-    smily.innerHTML = SMILY
+    var smiley = document.querySelector('.smiley')
+    smiley.innerHTML = SMILEY
     initGame()
 }
 //implementation of Safe Click ...
@@ -407,18 +369,15 @@ function safeClick(elLife) {
     for (var i = 0; i < gLevels[gChosenLevelIdx].SIZE; i++) {
         for (var j = 0; j < gLevels[gChosenLevelIdx].SIZE; j++) {
             var cell = gBoard[i][j]
-            if (cell.isShown === true || cell.ismine === true) continue
-            else{
-           
-            var coord = { i: i, j: j }
-            safePos.push(coord)
+            if (cell.isShown === true || cell.isMine === true) continue
+            else {
+
+                var coord = { i: i, j: j }
+                safePos.push(coord)
             }
         }
     }
-    console.log(safePos)
     var safeIdx = getRandomInt(0, safePos.length)
-    console.log(safeIdx)
-    console.log(safePos[safeIdx])
     var posI = safePos[safeIdx].i
     var posJ = safePos[safeIdx].j
     var elCellId = `cell-${posI}-${posJ}`
